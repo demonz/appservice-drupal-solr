@@ -4,11 +4,11 @@ services:
 
   solr:
 #    image: wodby/drupal-solr:7-5.4
-    image: nbcwebcontainers.azurecr.io/appservice-drupal-solr:5.5
+    image: nbcwebcontainers.azurecr.io/appservice-drupal-solr:7-5.5
     environment:
       SOLR_HEAP: 1024m
-#    volumes:
-#      - $PROJECT_BASE_DIR/NBCdev_solr:/home/solr/server/solr
+    volumes:
+      - ./data:/home/solr/server/solr
     ports:
       - "8983:8983"
       - "2222:2222"

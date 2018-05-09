@@ -2,15 +2,14 @@ FROM nbcwebcontainers.azurecr.io/wodby-drupal-solr:7-5.5
 
 MAINTAINER Demonz Media <hello@demonzmedia.com>
 
-USER root
+
+RUN apk add --update --no-cache --virtual .solr-rundeps \
+  openssh-server vim wget
 
 
 COPY sshd_config /etc/ssh/
 COPY init_container.sh /bin/
 
-
-RUN apk add --update --no-cache --virtual .solr-rundeps \
-  openssh-server vim wget
 
 RUN echo "root:Docker!" | chpasswd \
   && chmod 777 /var/log \
