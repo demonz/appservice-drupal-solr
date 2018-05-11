@@ -8,7 +8,10 @@ services:
     environment:
       SOLR_HEAP: 1024m
     volumes:
-      - ./data:/home/solr/server/solr
+      - ./data:/home
     ports:
       - "8983:8983"
       - "2222:2222"
+
+# is there a way to initialise the default core on first run?
+# docker-compose exec solr /usr/local/bin/init_solr localhost

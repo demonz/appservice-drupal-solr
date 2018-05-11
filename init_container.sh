@@ -21,37 +21,13 @@ cat /etc/motd
 eval $(printenv | awk -F= '{print "export " $1"="$2 }' >> /etc/profile)
 
 
-# PREPARE AND START SSHD
-# see https://github.com/danielguerra69/alpine-sshd/blob/master/docker-entrypoint.sh
-if [ ! -f "/etc/ssh/ssh_host_rsa_key" ]; then
-	# generate fresh rsa key
-	ssh-keygen -f /etc/ssh/ssh_host_rsa_key -N '' -t rsa
-fi
-if [ ! -f "/etc/ssh/ssh_host_dsa_key" ]; then
-	# generate fresh dsa key
-	ssh-keygen -f /etc/ssh/ssh_host_dsa_key -N '' -t dsa
-fi
-if [ ! -f "/etc/ssh/ssh_host_ecdsa_key" ]; then
-	# generate fresh dsa key
-	ssh-keygen -f /etc/ssh/ssh_host_ecdsa_key -N '' -t ecdsa
-fi
-if [ ! -f "/etc/ssh/ssh_host_ed25519_key" ]; then
-	# generate fresh dsa key
-	ssh-keygen -f /etc/ssh/ssh_host_ed25519_key -N '' -t ed25519
-fi
-
-
-# prepare run dir
-if [ ! -d "/var/run/sshd" ]; then
-  mkdir -p /var/run/sshd
-fi
-
-
 # run sshd in background
 /usr/sbin/sshd -D &
 
 
 # PREPARE AND START SOLR
+
+
 # see https://github.com/wodby/solr/blob/master/entrypoint.sh
 init_volumes
 
