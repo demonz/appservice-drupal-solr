@@ -75,7 +75,7 @@ RUN set -ex; \
 
 MAINTAINER Demonz Media <hello@demonzmedia.com>
 
-
+# install and prepare sshd
 # change root password to allow login via azure portal
 RUN set -ex; \
     \
@@ -92,7 +92,6 @@ RUN set -ex; \
     mkdir -p /var/run/sshd; \
     \
     echo "root:Docker!" | chpasswd
-
 
 
 COPY init_container.sh /bin/

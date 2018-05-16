@@ -5,7 +5,7 @@ set -x -e
 # import variables
 REGISTRY=nbcwebcontainers.azurecr.io
 NAME=appservice-drupal-solr
-VERSION=7-5.5
+VERSION=7.x-5.5
 
 
 docker build \
