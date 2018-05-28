@@ -94,18 +94,39 @@ RUN set -ex; \
     echo "root:Docker!" | chpasswd
 
 
+# install apache with proxy module
+# https://github.com/seibert-media/docker-alpine-apache-proxy/blob/master/Dockerfile
+RUN set -ex; \
+    \
+    apk add --no-cache \
+      apache2 apache2-proxy apache2-utils; \
+    sed -i 's/^LoadModule proxy_fdpass_module/#LoadModule proxy_fdpass_module/' /etc/apache2/conf.d/proxy.conf; \
+    sed -i "s/^#LoadModule slotmem_shm_module/LoadModule slotmem_shm_module/" /etc/apache2/httpd.conf; \
+    sed -i "s/^#LoadModule rewrite_module/LoadModule rewrite_module/" /etc/apache2/httpd.conf; \
+    echo "IncludeOptional /etc/apache2/vhost.d/*.conf" >> /etc/apache2/httpd.conf; \
+    mkdir -p /run/apache2 /etc/apache2/vhost.d; \
+    ln -sf /proc/self/fd/1 /var/log/apache2/access.log; \
+    ln -sf /proc/self/fd/1 /var/log/apache2/error.log;
+
+
 COPY init_container.sh /bin/
+COPY solr-vhost.conf /etc/apache2/vhost.d/
 COPY sshd_config /etc/ssh/
 
 
 RUN set -ex; \
-    \
-    chmod 755 /bin/init_container.sh
+   rm -f /var/log/apache2/*; \
+   rmdir /var/log/apache2; \
+   chmod 777 /var/log; \
+   chmod 777 /var/run; \
+   chmod 777 /var/lock; \
+   chmod 755 /bin/init_container.sh;
+
 
 
 WORKDIR /home
 
-EXPOSE 2222 8983
+EXPOSE 2222 8983 8080
 
 ENTRYPOINT ["/bin/init_container.sh"]
 CMD ["docker-entrypoint.sh", "solr-foreground"]
