@@ -28,27 +28,12 @@ RUN set -ex; \
     mv /opt/solr/server/solr/configsets /opt/docker-solr/configsets;
 
 COPY actions /usr/local/bin
-#COPY entrypoint.sh /
-
-#USER $SOLR_USER
-
-#VOLUME /opt/solr/server/solr
-#WORKDIR /opt/solr/server/solr
-
-#ENTRYPOINT ["/entrypoint.sh"]
-#CMD ["solr-foreground"]
-
 
 
 # Modified from https://github.com/wodby/drupal-solr/blob/master/Dockerfile
-#ARG BASE_IMAGE_TAG
-#FROM wodby/solr:${BASE_IMAGE_TAG}
-
 # SEARCH_API_SOLR_VER=7.x-1.12
 ARG SEARCH_API_SOLR_VER
 ENV SEARCH_API_SOLR_VER="${SEARCH_API_SOLR_VER}"
-
-#USER root
 
 RUN set -ex; \
     \
@@ -64,15 +49,11 @@ RUN set -ex; \
     sed -i -e 's/data_driven_schema_configs/drupal/g' /usr/local/bin/actions.mk; \
     sed -i -e 's/_default/drupal/g' /usr/local/bin/actions.mk;
 
-#USER $SOLR_USER
-
-
 
 # CUSTOM
 # Add ssh server for access via Azure portal
 # Customise init_container.sh to start sshd and
 # move solr work directory to file system persisted by App Service
-
 MAINTAINER Demonz Media <hello@demonzmedia.com>
 
 # install and prepare sshd
@@ -94,7 +75,7 @@ RUN set -ex; \
     echo "root:Docker!" | chpasswd
 
 
-# install apache with proxy module
+# install apache with proxy module to provide security to solr
 # https://github.com/seibert-media/docker-alpine-apache-proxy/blob/master/Dockerfile
 RUN set -ex; \
     \
@@ -103,6 +84,9 @@ RUN set -ex; \
     sed -i 's/^LoadModule proxy_fdpass_module/#LoadModule proxy_fdpass_module/' /etc/apache2/conf.d/proxy.conf; \
     sed -i "s/^#LoadModule slotmem_shm_module/LoadModule slotmem_shm_module/" /etc/apache2/httpd.conf; \
     sed -i "s/^#LoadModule rewrite_module/LoadModule rewrite_module/" /etc/apache2/httpd.conf; \
+    sed -i "s/^ServerTokens OS/ServerTokens Prod/" /etc/apache2/httpd.conf; \
+    sed -i "s/^ServerSignature On/ServerSignature Off/" /etc/apache2/httpd.conf; \
+    sed -i "s/^#ServerName www.example.com:80/ServerName localhost/" /etc/apache2/httpd.conf; \
     echo "IncludeOptional /etc/apache2/vhost.d/*.conf" >> /etc/apache2/httpd.conf; \
     mkdir -p /run/apache2 /etc/apache2/vhost.d; \
     ln -sf /proc/self/fd/1 /var/log/apache2/access.log; \
@@ -123,10 +107,9 @@ RUN set -ex; \
    chmod 755 /bin/init_container.sh;
 
 
-
 WORKDIR /home
 
-EXPOSE 2222 8983 8080
+EXPOSE 2222 8983 80
 
 ENTRYPOINT ["/bin/init_container.sh"]
 CMD ["docker-entrypoint.sh", "solr-foreground"]
