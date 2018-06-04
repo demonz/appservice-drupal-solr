@@ -42,6 +42,10 @@ RUN set -ex; \
     wget -qO- "${url}" | tar xz -C /opt/docker-solr/scripts/; \
     mkdir -p /opt/docker-solr/configsets/drupal; \
     mv "/opt/docker-solr/scripts/search_api_solr/solr-conf/${SOLR_VER:0:1}.x" /opt/docker-solr/configsets/drupal/conf; \
+    \
+    # change lock type to allow multiple solr instances to use the same index
+    sed -i "s/solr.lock.type:native/solr.lock.type:simple/" /opt/docker-solr/configsets/drupal/conf/solrconfig.xml; \
+    \
     rm -rf /opt/docker-solr/scripts/search_api_solr; \
     chown -R $SOLR_USER:$SOLR_USER /opt/docker-solr/configsets/drupal/; \
     \
@@ -109,7 +113,7 @@ RUN set -ex; \
 
 WORKDIR /home
 
-EXPOSE 2222 8983 80
+EXPOSE 2222 80
 
 ENTRYPOINT ["/bin/init_container.sh"]
 CMD ["docker-entrypoint.sh", "solr-foreground"]
