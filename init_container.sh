@@ -37,6 +37,7 @@ eval $(printenv | awk -F= '{print "export " $1"="$2 }' >> /etc/profile)
 
 sed -i "s/{WEBSITES_PORT}/${WEBSITES_PORT}/g" /etc/apache2/httpd.conf
 sed -i "s/{WEBSITES_HOST}/${WEBSITES_HOST}/g" /etc/apache2/vhost.d/solr-vhost.conf
+sed -i "s/{APACHE_REQUIREIP}/${APACHE_REQUIREIP//,/ }/g" /etc/apache2/vhost.d/solr-vhost.conf
 
 htpasswd -b -c /etc/apache2/.htpasswd ${SOLR_USER} ${SOLR_PASSWORD}
 
