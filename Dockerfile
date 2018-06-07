@@ -76,7 +76,8 @@ RUN set -ex; \
     # prepare run dir
     mkdir -p /var/run/sshd; \
     \
-    echo "root:Docker!" | chpasswd
+    # change root password to allow login via azure portal
+    echo "root:Docker!" | chpasswd;
 
 
 # install apache with proxy module to provide security to solr

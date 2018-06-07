@@ -28,6 +28,9 @@ cat /etc/motd
 eval $(printenv | awk -F= '{print "export " $1"="$2 }' >> /etc/profile)
 
 
+set -ex
+
+
 # run sshd in background
 /usr/sbin/sshd -D &
 
