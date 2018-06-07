@@ -4,7 +4,7 @@ services:
 
   solr:
 #    image: wodby/drupal-solr:7-5.4
-    image: nbcwebcontainers.azurecr.io/appservice-drupal-solr:7.x-5.5
+    image: demonz/appservice-drupal-solr:7.x-5.5
     environment:
       SOLR_HEAP: 1024m
       SOLR_USER: drupal
